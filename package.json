@@ -1,0 +1,44 @@
+{
+  "name": "@ctsj/react-ssr",
+  "version": "1.0.0",
+  "description": "React的服务器端渲染工具",
+  "main": "index.js",
+  "bin": {
+    "crs": "./bin/crs.js"
+  },
+  "scripts": {},
+  "keywords": [],
+  "author": "playerljc <playerljc@163.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/playerljc/CTSJ-React-SSR.git"
+  },
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/playerljc/CTSJ-React-SSR/issues"
+  },
+  "homepage": "https://github.com/playerljc/CTSJ-React-SSR#readme",
+  "devDependencies": {
+    "prettier": "^2.5.1",
+    "eslint": "^8.5.0",
+    "eslint-plugin-comments": "^1.0.0",
+    "eslint-plugin-eslint-comments": "^3.2.0",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-jest": "^24.5.2",
+    "eslint-plugin-react": "^7.26.1",
+    "eslint-plugin-unicorn": "^36.0.0",
+    "@umijs/fabric": "^2.8.1"
+  },
+  "dependencies": {
+    "@ctsj/build": "^6.0.1",
+    "cheerio": "^1.0.0-rc.10",
+    "commander": "^8.3.0",
+    "compression": "^1.7.4",
+    "cross-env": "^7.0.3",
+    "express": "^4.17.2",
+    "isomorphic-style-loader": "^5.3.2",
+    "nodemon": "^2.0.15",
+    "npm-run-all": "^4.1.5",
+    "webpack-node-externals": "^3.0.0"
+  }
+}
