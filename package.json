@@ -6,7 +6,9 @@
   "bin": {
     "crs": "./bin/crs.js"
   },
-  "scripts": {},
+  "scripts": {
+    "generatorchangelog": "bd changelog/CHANGELOG.html"
+  },
   "keywords": [],
   "author": "playerljc <playerljc@163.com>",
   "repository": {
