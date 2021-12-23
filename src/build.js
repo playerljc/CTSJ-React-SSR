@@ -158,22 +158,23 @@ function buildServer() {
   });
 }
 
-module.exports = {
+module.exports =
   /**
-   * build
-   * @description - build ssr
-   * @param contextconfig - 上下文构建的配置文件
-   *
-   *  command: '构建宿主工程的命令和参数'
-      cwd: 运行命令的路径(默认是buildssr运行的路径)
-      env: 环境变量
-      outputPath: 构建后的路径(一般是宿主路径中的dist)
-      htmlRelativePath: 'html相对路径'(一般是index.html)
-      htmlTemplateName: 'html模板名称'(默认是template)
-
-   * @param config - 构建服务端代码的配置文件，默认是crs.build.config.js，对构建服务代码进行自定义
-   */
-  build: function ({ contextconfig, config }) {
+ * build
+ * @description - build ssr
+ * @param contextconfig - 上下文构建的配置文件
+ * {
+       command: '构建宿主工程的命令和参数，如npm run buildapp'
+       cwd: 运行命令的路径(默认是buildssr运行的路径)
+       env: 环境变量
+       outputPath: 静态资源构建后的路径(一般是宿主路径中的dist)
+       htmlRelativePath: 静态资源中模板'html相对路径'(一般是index.html)
+       htmlTemplateName: 新创建的模板'html模板名称'(默认是template)
+     }
+ * @param config - 构建服务端代码的配置文件，默认是crs.build.config.js，对构建服务代码进行自定义
+ */
+  function ({ contextconfig, config }) {
+    // 构建宿主工程的配置文件路径
     if (contextconfig) {
       if (path.isAbsolute(contextconfig)) {
         contextConfigPath = contextconfig;
@@ -184,6 +185,7 @@ module.exports = {
       contextConfigPath = path.join(runtimePath, 'crsrc.js');
     }
 
+    // 构建服务端代码的配置文件路径
     if (config) {
       if (path.isAbsolute(config)) {
         configPath = config;
@@ -197,7 +199,7 @@ module.exports = {
     // 1.对宿主工程进行build
     // 2.对服务端代码进行build
     // 二者是并行的互补干扰
-    Promise.all([/*buildContext(),*/ buildServer()])
+    Promise.all([buildContext(), buildServer()])
       .then(() => {
         console.log('build finish');
         process.exit();
@@ -205,5 +207,4 @@ module.exports = {
       .catch((error) => {
         console.log('build error', error);
       });
-  },
-};
+  };

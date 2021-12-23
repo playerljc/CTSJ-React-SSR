@@ -30,11 +30,25 @@ function externals(externals) {
 }
 
 module.exports = {
+  /**
+   * getTheme
+   * @description - 主题的提供
+   * @param defineh
+   * @return {*|{}}
+   */
   getTheme({ define }) {
     const customWebpackConfig = require(define.get('configPath'));
 
     return ('getTheme' in customWebpackConfig && customWebpackConfig.getTheme()) || {};
   },
+  /**
+   * getConfig
+   * @description - 构建的配置文件修改
+   * @param webpackConfig
+   * @param webpack
+   * @param plugins
+   * @param define
+   */
   getConfig({ webpackConfig, webpack, plugins, define }) {
     contextRootPath = define.get('contextRootPath');
 
@@ -64,13 +78,14 @@ module.exports = {
     // 排除
     const contextPackageJSON = require(path.join(contextRootPath, 'package.json'));
     // @ctsj/react-ssr的package.json
-    const packageJSON = require(path.join(__dirname, 'package.json'));
+    // const packageJSON = require(path.join(__dirname, 'package.json'));
     webpackConfig.externalsPresets = { node: true };
     webpackConfig.externals = [
       nodeExternals(),
       // 排除宿主工程依赖
       externals(Object.keys(contextPackageJSON.dependencies || {})),
       externals(Object.keys(contextPackageJSON.devDependencies || {})),
+      // 需要手动排除
       {
         'react-dom/server': 'commonjs2 react-dom/server',
       },
@@ -81,14 +96,14 @@ module.exports = {
     // 宿主工程前缀的alias(服务端代码来引用这个文件)
     webpackConfig.resolve.alias['#'] = path.join(contextRootPath, 'crs.module.js');
 
-    // 模块引用的是main
+    // 模块引用的是main,因为target是node，node是commonjs
     webpackConfig.resolve.mainFields = ['main'];
 
     // plugins的处理
     // 使用ForkTsCheckerWebpackPlugin、WebpackBar
     webpackConfig.plugins = webpackConfig.plugins.slice(4);
 
-    // optimization
+    // optimization 不进行压缩
     webpackConfig.optimization = {
       splitChunks: false,
     };

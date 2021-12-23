@@ -1,9 +1,8 @@
 const map = new Map();
 
 /**
- * 初始化命令行参数
- * --type 构建类型
- * --config 另外的配置文件
+ * initCommandArgs
+ * @description - 初始化命令行参数，参数是key1=value1 key2=value2 ...形势
  * @return {Map}
  */
 export function initCommandArgs() {
@@ -16,6 +15,12 @@ export function initCommandArgs() {
   }
 }
 
+/**
+ * getArg
+ * @description - 根据key获取命令参数值
+ * @param key
+ * @return {any}
+ */
 export function getArg(key) {
   return map.get(key);
 }
