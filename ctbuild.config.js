@@ -13,6 +13,12 @@ let contextRootPath;
 // 构建服务端代码的配置文件，默认是ctbuild.config.ssr.js，对构建服务代码进行自定义
 let configPath;
 
+/**
+ * externals
+ * @description - 对象的方式排除
+ * @param externals
+ * @return {{}}
+ */
 function externals(externals) {
   const result = {};
 
@@ -24,6 +30,11 @@ function externals(externals) {
 }
 
 module.exports = {
+  getTheme({ define }) {
+    const customWebpackConfig = require(define.get('configPath'));
+
+    return ('getTheme' in customWebpackConfig && customWebpackConfig.getTheme()) || {};
+  },
   getConfig({ webpackConfig, webpack, plugins, define }) {
     contextRootPath = define.get('contextRootPath');
 
@@ -44,18 +55,26 @@ module.exports = {
     // 出口点
     webpackConfig.output = {
       filename: 'server.js',
+      // 在@ctsj/react-ssr根路径中创建build目录
+      // path: path.join(__dirname, 'build'),
       path: path.join(contextRootPath, 'build'),
       clean: true,
     };
 
     // 排除
     const contextPackageJSON = require(path.join(contextRootPath, 'package.json'));
-    // const packageJSON = require(path.join(__dirname, 'package.json'));
+    // @ctsj/react-ssr的package.json
+    const packageJSON = require(path.join(__dirname, 'package.json'));
     webpackConfig.externalsPresets = { node: true };
     webpackConfig.externals = [
       nodeExternals(),
+      // 排除宿主工程依赖
       externals(Object.keys(contextPackageJSON.dependencies || {})),
       externals(Object.keys(contextPackageJSON.devDependencies || {})),
+      {
+        'react-dom/server': 'commonjs2 react-dom/server',
+      },
+      // 排除自身工程依赖（不能排除自身因为nodejs在宿主工程里运行
       // externals(Object.keys(packageJSON.dependencies || {})),
     ];
 

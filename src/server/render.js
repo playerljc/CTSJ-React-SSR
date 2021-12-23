@@ -1,5 +1,6 @@
-const { renderToString } = require('react-dom/server');
-const { getStaticRouter, getRootElementSelector } = require('#');
+import React from 'react';
+import { renderToString } from 'react-dom/server';
+import { getStaticRouter, getRootElementSelector } from '#';
 
 /**
  * render
@@ -8,12 +9,14 @@ const { getStaticRouter, getRootElementSelector } = require('#');
  * @param res
  * @param $
  */
-module.exports = function (req, res, $) {
+export default function (req, res, $) {
   const context = {};
 
-  const content = renderToString(getStaticRouter({ context, location: req.path }));
+  getStaticRouter({ context, location: req.path }).then((staticRouter) => {
+    const content = renderToString(staticRouter);
 
-  $(getRootElementSelector).html(content);
+    $(getRootElementSelector()).html(content);
 
-  res.send($.html());
-};
+    res.send($.html());
+  });
+}

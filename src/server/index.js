@@ -1,20 +1,21 @@
-const compression = require('compression');
-const express = require('express');
-const cheerio = require('cheerio');
+import fs from 'fs';
+import compression from 'compression';
+import express from 'express';
+import cheerio from 'cheerio';
 
 // 引入宿主工程的crs.js文件
-const { getRouterPathConfig, getHtmlTemplatePath, getPublicResourcePath } = require('#');
+import { getRouterPathConfig, getHtmlTemplatePath, getPublicResourcePath } from '#';
 
-const commandArgs = require('./commandArgs');
-const render = require('./render');
+import { initCommandArgs, getArg } from './commandArgs.js';
+import render from './render';
 
 // 初始化命令行参数
-commandArgs.initCommandArgs();
+initCommandArgs();
 
 // 模板的dom的$
 let $;
 
-const port = commandArgs.getArg('port') || 9080;
+const port = getArg('port') || 9080;
 
 // express对象
 const app = express();
@@ -26,18 +27,20 @@ app.use(compression());
 app.use(express.static(getPublicResourcePath()));
 
 // 迭代routerPath创建路由拦截器
-getRouterPathConfig.forEach((path) => {
-  app.get(path, (req, res) => {
-    render(req, res, $);
+getRouterPathConfig().then((config) => {
+  config.forEach((path) => {
+    app.get(path, (req, res) => {
+      render(req, res, $);
+    });
   });
 });
 
 // 开启服务
 app.listen(port, () => {
-  console.log(`${port}started!`);
+  console.log(`${port} started!`);
 
   // 读取模板文件
-  const htmlStr = fs.readFileSync(getHtmlTemplatePath, {
+  const htmlStr = fs.readFileSync(getHtmlTemplatePath(), {
     encoding: 'utf-8',
   });
 
