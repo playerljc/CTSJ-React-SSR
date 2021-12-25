@@ -10,7 +10,7 @@ const nodeExternals = require('webpack-node-externals');
 // 宿主工程根路径
 let contextRootPath;
 
-// 构建服务端代码的配置文件，默认是ctbuild.config.ssr.js，对构建服务代码进行自定义
+// 构建服务端代码的配置文件，默认是crs.build.config.js，对构建服务代码进行自定义
 let configPath;
 
 /**
@@ -27,6 +27,76 @@ function externals(externals) {
   });
 
   return result;
+}
+
+/**
+ * cssRuleDeal
+ * @description - cssRuleDeal
+ * @param cssRule
+ */
+function cssRuleDeal(cssRule) {
+  cssRule.use.shift();
+  cssRule.use[0].options.modules = {
+    exportOnlyLocals: true,
+  };
+}
+
+function lessCssModuleRuleDeal(lessRule, customWebpackConfig) {
+  lessRule.use.shift();
+  lessRule.use[0].options.modules = {
+    exportOnlyLocals: true,
+    getLocalIdent: getLocalIdent(customWebpackConfig),
+    // localIdentName: customWebpackConfig.localIdentName || '[path][name]__[local]--[hash:base64:5]'
+  };
+}
+
+function lessNoCssModuleRuleDeal(lessRule) {
+  lessRule.use.shift();
+  lessRule.use[0].options.modules = {
+    exportOnlyLocals: true,
+  };
+}
+
+function slash(input) {
+  const isExtendedLengthPath = /^\\\\\?\\/.test(input);
+
+  if (isExtendedLengthPath) {
+    return input;
+  }
+
+  return input.replace(/\\/g, '/');
+}
+
+/**
+ * getLocalIdent
+ * @description - getLocalIdent
+ * @param customWebpackConfig
+ */
+function getLocalIdent(customWebpackConfig) {
+  return function (context, localIdentName, localName) {
+    if (
+      customWebpackConfig.getLocalIdent &&
+      (typeof customWebpackConfig.getLocalIdent).toLowerCase() === 'function'
+    ) {
+      return customWebpackConfig.getLocalIdent(context, localIdentName, localName);
+    } else {
+      const match = context.resourcePath.match(/src(.*)/);
+
+      if (match && match[1]) {
+        const path = match[1].replace('.less', '');
+
+        const arr = slash(path)
+          .split('/')
+          .filter((t) => t)
+          .map((a) => a.replace(/([A-Z])/g, '-$1'))
+          .map((a) => a.toLowerCase());
+
+        return `${arr.join('-')}-${localName}`.replace(/--/g, '-');
+      }
+
+      return localName;
+    }
+  };
 }
 
 module.exports = {
@@ -53,6 +123,8 @@ module.exports = {
     contextRootPath = define.get('contextRootPath');
 
     configPath = define.get('configPath');
+
+    const customWebpackConfig = require(configPath);
 
     // 针对服务器端，对于require这样的代码进行与客户端不同的处理
     webpackConfig.target = 'node';
@@ -108,33 +180,39 @@ module.exports = {
       splitChunks: false,
     };
 
+    // css-loader处理
+    cssRuleDeal(webpackConfig.module.rules[2]);
+    // less-loader1处理
+    lessCssModuleRuleDeal(webpackConfig.module.rules[3], customWebpackConfig);
+    // less-loader2处理
+    lessNoCssModuleRuleDeal(webpackConfig.module.rules[webpackConfig.module.rules.length - 1]);
+
     // isomorphic-style-loader的处理，将style-loader替换成isomorphic-style-loader
-    webpackConfig.module.rules = webpackConfig.module.rules.map((rule) => {
-      if (!('use' in rule) || !Array.isArray(rule.use)) return rule;
-
-      rule.use = rule.use.map((item) => {
-        if (typeof item === 'string') {
-          if (item === plugins.MiniCssExtractPlugin.loader) {
-            return 'isomorphic-style-loader';
-          }
-        } else {
-          if (
-            typeof item === 'object' &&
-            'loader' in item &&
-            item.loader === plugins.MiniCssExtractPlugin.loader
-          ) {
-            return 'isomorphic-style-loader';
-          }
-        }
-
-        return item;
-      });
-
-      return rule;
-    });
+    // webpackConfig.module.rules = webpackConfig.module.rules.map((rule) => {
+    //   if (!('use' in rule) || !Array.isArray(rule.use)) return rule;
+    //
+    //   rule.use = rule.use.map((item) => {
+    //     if (typeof item === 'string') {
+    //       if (item === plugins.MiniCssExtractPlugin.loader) {
+    //         return 'isomorphic-style-loader';
+    //       }
+    //     } else {
+    //       if (
+    //         typeof item === 'object' &&
+    //         'loader' in item &&
+    //         item.loader === plugins.MiniCssExtractPlugin.loader
+    //       ) {
+    //         return 'isomorphic-style-loader';
+    //       }
+    //     }
+    //
+    //     return item;
+    //   });
+    //
+    //   return rule;
+    // });
 
     // 交给用户在处理
-    const customWebpackConfig = require(configPath);
     customWebpackConfig.getConfig({
       webpackConfig,
       webpack,

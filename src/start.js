@@ -7,11 +7,8 @@ const { getEnv, isWin32 } = require('./util');
 // 运行命令的路径(也就是宿主工程的根路径)
 const runtimePath = process.cwd();
 
-// build.js所在的路径
-const codePath = __dirname;
-
 // crs.sh所在路径
-const commandPath = path.join(codePath, '../', 'node_modules', '.bin', path.sep);
+const commandPath = path.join(__dirname, '../', 'node_modules', '.bin', path.sep);
 
 /**
  * startDev
@@ -42,8 +39,6 @@ function startDev(port) {
 
   handler.on('close', (code) => {
     console.log(`close：${code}`);
-
-    resolve();
   });
 }
 
@@ -81,8 +76,6 @@ function startProd({ name, port }) {
 
   handler.on('close', (code) => {
     console.log(`close：${code}`);
-
-    resolve();
   });
 }
 
