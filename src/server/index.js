@@ -4,7 +4,11 @@ import express from 'express';
 import cheerio from 'cheerio';
 
 // 引入宿主工程的crs.js文件
-import { getRouterPathConfig, getHtmlTemplatePath, getPublicResourcePath } from '#';
+import {
+  getRouterPathConfig,
+  getHtmlTemplatePath,
+  getPublicResourcePath,
+} from '#';
 
 import { initCommandArgs, getArg } from './commandArgs.js';
 import render from './render';
@@ -30,9 +34,14 @@ app.use(express.static(getPublicResourcePath()));
 getRouterPathConfig().then((config) => {
   config.forEach((path) => {
     app.get(path, (req, res) => {
-      render(req, res, $);
+      render(req, res, $.root().clone());
     });
   });
+});
+
+/** 当以上路径都没有匹配成功时  */
+app.all('*', (req, res) => {
+  res.send($.html());
 });
 
 // 开启服务

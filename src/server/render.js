@@ -1,6 +1,6 @@
 import React from 'react';
 import { renderToString } from 'react-dom/server';
-import { getStaticRouter, getRootElementSelector } from '#';
+import { getStaticRouter, getRootElementSelector, getData } from '#';
 
 /**
  * render
@@ -13,10 +13,16 @@ export default function (req, res, $) {
   const context = {};
 
   getStaticRouter({ context, location: req.path }).then((staticRouter) => {
-    const content = renderToString(staticRouter);
+    // 获取数据
+    getData(req).then(data => {
+      const content = renderToString(staticRouter);
 
-    $(getRootElementSelector()).html(content);
+      $(getRootElementSelector()).html(content);
 
-    res.send($.html());
+      // 把获取的数据放入window._crsStore中
+      $.root().append(`<script>window._crsStore = JSON.stringify(${data});</script>`);
+
+      res.send($.html());
+    });
   });
 }
