@@ -38,21 +38,24 @@ app.use(express.static(getPublicResourcePath()));
 
 // 迭代routerPath创建路由拦截器
 getRouterPathConfig().then((config) => {
-  console.log('config', config);
+  // console.log('config', config);
 
   config.forEach((path) => {
     app.get(path, (req, res) => {
-      console.log('path', path);
+      // console.log('path', path);
       render(req, res, $());
     });
   });
+
+  /** 当以上路径都没有匹配成功时  */
+  app.all('*', (req, res) => {
+    // console.log('app.all', req.path);
+    // console.log('$().html()',$().html());
+    res.send($().html());
+  });
 });
 
-/** 当以上路径都没有匹配成功时  */
-// app.all('*', (req, res) => {
-//   console.log('app.all', req);
-//   res.send($.html());
-// });
+
 
 // 开启服务
 app.listen(port, () => {
