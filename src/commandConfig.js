@@ -1,10 +1,12 @@
 const build = require('./build');
 const start = require('./start');
 const stop = require('./stop');
+const startDev = require('./startDev/index.js');
 
 module.exports = {
   /**
    * build(build ssr)
+   * @description - ssr构建
      .需要build上下文(前端静态资源)和服务端代码
      .这个命令应该在上下文根目录执行
      .build上下文各自平台提供命令(可以任意的平台，如create-react-app、ant-pro或自己搭建的框架，只要有构建的命令(能力)即可)
@@ -38,12 +40,16 @@ module.exports = {
       },
     ],
     action: (entry) => {
-      build(entry);
+      build(entry).then(() => {
+        process.exit();
+      }).catch(() => {
+        process.exit();
+      });
     },
   },
   /**
    * start
-   * @description - 启动
+   * @description - 启动ssr type dev|prod prod使用pm2和--name启动 dev用node启动
    */
   start: {
     alias: 'start ssr',
@@ -81,6 +87,31 @@ module.exports = {
     ],
     action: (entry) => {
       stop(entry);
-    }
+    },
+  },
+  /**
+   * start-dev
+   * @description
+   */
+  'start-dev': {
+    alias: 'start-dev ssr',
+    description: 'start by development',
+    options: [
+      {
+        command: '-hc --contextconfig <path>',
+        description: 'Context build command,the default is crsrc.js',
+      },
+      {
+        command: '-c, --config <path>',
+        description: 'Build configuration file path,the default is crs.build.config.js',
+      },
+      {
+        command: '-p --port <path>',
+        description: 'port default 9080',
+      },
+    ],
+    action: (entry) => {
+      startDev(entry);
+    },
   },
 };

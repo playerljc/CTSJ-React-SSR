@@ -10,6 +10,8 @@ const runtimePath = process.cwd();
 // crs.sh所在路径
 const commandPath = path.join(__dirname, '../', 'node_modules', '.bin', path.sep);
 
+let startDevHandler;
+
 /**
  * startDev
  * @description - startDev
@@ -18,10 +20,15 @@ const commandPath = path.join(__dirname, '../', 'node_modules', '.bin', path.sep
 function startDev(port) {
   const cmd = isWin32() ? 'node.cmd' : 'node';
 
-  const handler = spawn(
+  if(startDevHandler) {
+    process.kill(-startDevHandler.pid);
+  }
+
+  startDevHandler = spawn(
     cmd,
     [path.join(runtimePath, 'build', 'server.js'), `port=${port || 9080}`],
     {
+      detached: true,
       // 构建宿主工程应该在宿主工程根路径下执行
       cwd: runtimePath,
       encoding: 'utf-8',
@@ -29,15 +36,15 @@ function startDev(port) {
     },
   );
 
-  handler.stdout.on('data', (data) => {
+  startDevHandler.stdout.on('data', (data) => {
     console.log(`stdout: ${data}`);
   });
 
-  handler.stderr.on('data', (data) => {
+  startDevHandler.stderr.on('data', (data) => {
     console.log(`stderr: ${data}`);
   });
 
-  handler.on('close', (code) => {
+  startDevHandler.on('close', (code) => {
     console.log(`close：${code}`);
   });
 }

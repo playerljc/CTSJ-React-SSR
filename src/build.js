@@ -157,10 +157,10 @@ function buildServer() {
 
 module.exports =
   /**
- * build
- * @description - build ssr
- * @param contextconfig - 上下文构建的配置文件
- * {
+   * build
+   * @description - build ssr
+   * @param contextconfig - 上下文构建的配置文件
+   * {
        command: '构建宿主工程的命令和参数，如npm run buildapp'
        cwd: 运行命令的路径(默认是buildssr运行的路径)
        env: 环境变量
@@ -168,7 +168,7 @@ module.exports =
        htmlRelativePath: 静态资源中模板'html相对路径'(一般是index.html)
        htmlTemplateName: 新创建的模板'html模板名称'(默认是template)
      }
- * @param config - 构建服务端代码的配置文件，默认是crs.build.config.js，对构建服务代码进行自定义
+   * @param config - 构建服务端代码的配置文件，默认是crs.build.config.js，对构建服务代码进行自定义
  */
   function ({ contextconfig, config }) {
     // 构建宿主工程的配置文件路径
@@ -196,10 +196,10 @@ module.exports =
     // 1.对宿主工程进行build
     // 2.对服务端代码进行build
     // 二者是并行的互补干扰
-    Promise.all([buildContext(), buildServer()])
+    return Promise.all([buildContext(), buildServer()])
       .then(() => {
         console.log('build finish');
-        process.exit();
+        // process.exit();
       })
       .catch((error) => {
         console.log('build error', error);
