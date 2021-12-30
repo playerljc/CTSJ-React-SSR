@@ -116,7 +116,7 @@ export function getRootElementSelector() {
  上下文构建的配置文件 默认是宿主工程根路径下的crsrc.js
  此文件返回如下结构
 
- ```json
+ ```js
 {
    command: '构建宿主工程的命令和参数，如npm run buildapp'
    cwd: 运行命令的路径(默认是buildssr运行的路径)
