@@ -20,6 +20,7 @@ let startDevHandler;
 function startDev(port) {
   const cmd = isWin32() ? 'node.cmd' : 'node';
 
+  // 先kill
   if(startDevHandler) {
     process.kill(-startDevHandler.pid);
   }
@@ -28,6 +29,7 @@ function startDev(port) {
     cmd,
     [path.join(runtimePath, 'build', 'server.js'), `port=${port || 9080}`],
     {
+      // 分离主子进程
       detached: true,
       // 构建宿主工程应该在宿主工程根路径下执行
       cwd: runtimePath,
