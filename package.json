@@ -1,6 +1,6 @@
 {
   "name": "@ctsj/react-ssr",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "React的服务器端渲染工具",
   "main": "index.js",
   "bin": {
