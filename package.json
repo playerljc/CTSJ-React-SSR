@@ -7,7 +7,8 @@
     "crs": "./bin/crs.js"
   },
   "scripts": {
-    "generatorchangelog": "bd changelog/CHANGELOG.html"
+    "generatorchangelog": "bd changelog/CHANGELOG.html",
+    "publish": "npm publish --access=public"
   },
   "keywords": [],
   "author": "playerljc <playerljc@163.com>",
