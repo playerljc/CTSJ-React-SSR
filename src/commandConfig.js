@@ -91,7 +91,7 @@ module.exports = {
   },
   /**
    * start-dev
-   * @description
+   * @description 开发模式构建+启动ssr服务，支持修改文件后重新编译和启动服务
    */
   'start-dev': {
     alias: 'start-dev ssr',
